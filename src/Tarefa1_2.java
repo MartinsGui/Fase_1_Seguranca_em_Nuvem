@@ -1,28 +1,33 @@
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class Tarefa1_2 {
     public static void main(String[] args) {
         try {
-            // Chave fornecida para AES
+            // Chave fornecida (em hexadecimal)
             String chaveHex = "33A18467DB4AF474B051523A73DDA955";
             byte[] chaveBytes = hexStringToByteArray(chaveHex);
 
-            // Texto claro (seu nome completo, exemplo: "Guilherme Martins")
+            // Texto claro (seu nome completo)
             String textoClaro = "Guilherme Martins";
 
-            // IV (contador aleatório, exemplo gerado)
+            // IV aleatório (exemplo gerado)
             String ivHex = "4F8C9A7F4B2C0D4A6E1F9E56B9B2D74E";
             byte[] ivBytes = hexStringToByteArray(ivHex);
 
-            // Criar chave secreta a partir da chave hex fornecida
+            // 🚀 Ajustar o tamanho do texto para ser múltiplo de 16 bytes (com espaços)
+            int blockSize = 16;
+            while (textoClaro.getBytes(StandardCharsets.UTF_8).length % blockSize != 0) {
+                textoClaro += " ";
+            }
+
+            // Criar a chave secreta
             SecretKeySpec chave = new SecretKeySpec(chaveBytes, "AES");
 
-            // Criar o IV (counter) a partir do IV hex fornecido
+            // Criar o IV (contador) a partir do IV hex fornecido
             IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);
 
             // Configurar o algoritmo AES em modo CTR
@@ -30,12 +35,12 @@ public class Tarefa1_2 {
             cipher.init(Cipher.ENCRYPT_MODE, chave, ivSpec);
 
             // Cifrar o texto claro
-            byte[] textoCifradoBytes = cipher.doFinal(textoClaro.getBytes("UTF-8"));
+            byte[] textoCifradoBytes = cipher.doFinal(textoClaro.getBytes(StandardCharsets.UTF_8));
 
             // Converter o texto cifrado para hexadecimal
             String textoCifradoHex = byteArrayToHexString(textoCifradoBytes);
 
-            // Exibir o IV e o texto cifrado em hexadecimal
+            // Exibir os resultados
             System.out.println("IV (Counter) em hexadecimal: " + ivHex);
             System.out.println("Texto Cifrado em hexadecimal: " + textoCifradoHex);
 
@@ -44,7 +49,7 @@ public class Tarefa1_2 {
         }
     }
 
-    // Função para converter uma string hexadecimal para um array de bytes
+    // Função para converter string hexadecimal para array de bytes
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
@@ -55,7 +60,7 @@ public class Tarefa1_2 {
         return data;
     }
 
-    // Função para converter um array de bytes para uma string hexadecimal
+    // Função para converter array de bytes para string hexadecimal
     public static String byteArrayToHexString(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
